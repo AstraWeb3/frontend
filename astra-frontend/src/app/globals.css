@@ -6,6 +6,7 @@
   --clr-black: #0a0a0a;
   --clr-gray-alpha: #1a1a1a;
   --clr-gray: #ededed;
+  --clr-blue: #0090ff;
 
   --container-padding: 5vw;
   --sign-up-container-width: clamp(20rem, 30vw, 28rem);
