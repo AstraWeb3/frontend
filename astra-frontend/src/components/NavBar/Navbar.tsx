@@ -13,6 +13,9 @@ export default function Navbar() {
         <Link href="/shop" className="hover:underline">
           Marketplace
         </Link>
+        <Link href="/documentation" className="hover:underline">
+          Documentation
+        </Link>
       </div>
     </nav>
   );

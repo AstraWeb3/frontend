@@ -1,5 +1,5 @@
-import CategoriesPreview from "../components/CateogoriesPreview/CategoriesPreview";
-import Directory from "../components/Directory/Directory";
+import Directory from "@/components/Directory/Directory";
+import CategoriesPreview from "../../components/CateogoriesPreview/CategoriesPreview";
 
 const Shop = () => {
   return <Directory />;

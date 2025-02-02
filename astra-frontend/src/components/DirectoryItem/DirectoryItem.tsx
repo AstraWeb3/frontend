@@ -1,5 +1,5 @@
 import { DirectoryCategory } from "../Directory/Directory";
-import "../DirectoryItem/DirectoryItem.styles.scss";
+import "./DirectoryItem.styles.scss";
 import Link from "next/link";
 
 type DirectoryItemProps = {

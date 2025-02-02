@@ -1,6 +1,6 @@
 import Link from "next/link";
 import "../[category]/Category.styles.scss";
-import ProductCard from "@/app/components/ProductCard/ProductCard";
+import ProductCard from "@/components/ProductCard/ProductCard";
 
 interface CategoryPageProps {
   params: {

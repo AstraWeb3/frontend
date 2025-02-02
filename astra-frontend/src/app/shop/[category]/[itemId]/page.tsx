@@ -1,4 +1,4 @@
-import ProductCard from "@/app/components/ProductCard/ProductCard";
+import ProductCard from "@/components/ProductCard/ProductCard";
 
 interface ItemPageProps {
   params: {

@@ -58,12 +58,12 @@ body {
   position: relative;
 }
 
-.flex-col {
+/* .flex-col {
   display: block;
   width: 100%;
   order: 2;
   position: relative;
-}
+} */
 
 h3.big {
   font-size: calc(var(--title-size) * 0.45);
