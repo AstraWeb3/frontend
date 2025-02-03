@@ -7,6 +7,7 @@
 import { CommandResult } from "@/models/CommandResult";
 import { GameDetails } from "@/models/GameDetails";
 import { GamesPage } from "@/models/GamesPage";
+import { Result } from "@/uitls/Result";
 
 /**
  * Represents a client for interacting with the games API.
@@ -36,7 +37,7 @@ class GamesClient {
     pageNumber: number,
     pageSize: number,
     nameSearch?: string
-  ): Promise<GamesPage> {
+  ): Promise<Result<GamesPage>> {
     // Construct the parameters for the request
     const url = new URL(`${this.baseUrl}/games`);
     url.searchParams.append("pageNumber", pageNumber.toString());
@@ -50,10 +51,11 @@ class GamesClient {
 
     if (!response.ok) {
       const errorMessages = await this.handleFetchError(response);
-      throw new Error(errorMessages.join("\n"));
+      return Result.fail<any>(new Error(errorMessages.join("\n")));
     }
 
-    return await response.json();
+    const data: GamesPage = await response.json();
+    return Result.ok<GamesPage>(data);
   }
 
   /**

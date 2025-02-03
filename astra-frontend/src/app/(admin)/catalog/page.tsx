@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import "../catalog/Catalog.styles.scss";
 
+/**
+ * Renders the CatalogPage component.
+ * This component displays a catalog of games and provides search and delete functionality.
+ */
 export default function CatalogPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,16 +22,24 @@ export default function CatalogPage() {
   const [gamesPage, setGamesPage] = useState<{ data: GameSummary[] } | null>(
     null
   );
+
   const [paginationInfo, setPaginationInfo] = useState<{
     currentPage: number;
     totalPages: number;
   } | null>(null);
+
   const [loadingErrorList, setLoadingErrorList] = useState<string[]>([]);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [gameToDelete, setGameToDelete] = useState<GameSummary | null>(null);
 
+  /**
+   * Number of games to display per page.
+   */
   const pageSize = 5;
 
+  /**
+   * Fetches the games based on the search parameters.
+   */
   const fetchGames = async () => {
     const pageNumber = parseInt(searchParams.get("page") || "1", 10);
 
@@ -39,11 +51,15 @@ export default function CatalogPage() {
         nameSearch
       );
 
-      setGamesPage(response);
-      setPaginationInfo({
-        currentPage: pageNumber,
-        totalPages: response.totalPages,
-      });
+      if (response.isSuccess) {
+        const gamePage = response.getData();
+
+        setGamesPage(gamePage);
+        setPaginationInfo({
+          currentPage: pageNumber,
+          totalPages: gamePage.totalPages,
+        });
+      }
     } catch (error) {
       setLoadingErrorList([
         error instanceof Error ? error.message : "An unknown error occurred",
@@ -51,16 +67,32 @@ export default function CatalogPage() {
     }
   };
 
+  /**
+   * Sets the document title and fetches the games when the component mounts
+   * or when the search parameters change.
+   */
   useEffect(() => {
     document.title = "Game Catalog";
     fetchGames();
   }, [searchParams, auth.user?.access_token]);
 
+  /**
+   * Handles the search form submission.
+   * Navigates to the catalog page with the search parameters.
+   *
+   * @param event - The form event.
+   */
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     router.push(`/catalog?name=${nameSearch}&page=1`);
   };
 
+  /**
+   * Handles the input change for the search input field.
+   * Updates the search input value and navigates to the catalog page with the updated search parameters.
+   *
+   * @param event - The change event.
+   */
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setNameSearch(value);
@@ -70,6 +102,12 @@ export default function CatalogPage() {
     }
   };
 
+  /**
+   * Handles the deletion of a game.
+   * Deletes the game using the GamesClient and fetches the updated list of games.
+   *
+   * @param gameId - The ID of the game to delete.
+   */
   const handleDelete = async (gameId: string) => {
     setErrorList([]);
     try {
@@ -88,6 +126,11 @@ export default function CatalogPage() {
     }
   };
 
+  /**
+   * Renders the loading error messages if there are any.
+   *
+   * @returns JSX element containing the loading error messages.
+   */
   if (loadingErrorList.length > 0) {
     return (
       <div>
@@ -100,6 +143,11 @@ export default function CatalogPage() {
     );
   }
 
+  /**
+   * Renders the loading message if the gamesPage or paginationInfo is null.
+   *
+   * @returns JSX element containing the loading message.
+   */
   if (gamesPage === null || paginationInfo === null) {
     return (
       <p className="mt-3">
@@ -108,6 +156,11 @@ export default function CatalogPage() {
     );
   }
 
+  /**
+   * Renders the CatalogPage component.
+   *
+   * @returns JSX element containing the CatalogPage component.
+   */
   return (
     <div className="container">
       <div className="search-bar">
