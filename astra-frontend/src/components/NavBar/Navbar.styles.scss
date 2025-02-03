@@ -16,6 +16,13 @@
     }
   }
 
+  .auth-actions :is(.user-info) {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+  }
+
   .links {
     display: flex;
     align-items: center;

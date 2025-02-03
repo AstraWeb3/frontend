@@ -1,0 +1,100 @@
+.container {
+  padding: 2rem;
+  background-color: #f8f9fa;
+
+  .search-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+
+    form {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      input {
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        flex: 1;
+
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+      }
+    }
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background-color: #343a40;
+        color: white;
+
+        th {
+          padding: 1rem;
+          text-align: left;
+        }
+      }
+
+      tbody {
+        tr {
+          &:nth-child(even) {
+            background-color: #f1f1f1;
+          }
+
+          td {
+            padding: 1rem;
+            vertical-align: middle;
+
+            img {
+              width: 80px;
+              height: 80px;
+              object-fit: cover;
+              border-radius: 0.5rem;
+            }
+          }
+
+          .actions {
+            display: flex;
+            gap: 0.5rem;
+
+            button {
+              padding: 0.5rem 1rem;
+              font-weight: bold;
+              border-radius: 0.375rem;
+
+              &.edit {
+                background-color: #007bff;
+                color: white;
+
+                &:hover {
+                  background-color: #0056b3;
+                }
+              }
+
+              &.delete {
+                background-color: #dc3545;
+                color: white;
+
+                &:hover {
+                  background-color: #a71d2a;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

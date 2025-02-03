@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useAuth } from "react-oidc-context";
 import "../NavBar/Navbar.styles.scss";
 import { Button } from "../ui/button";
+import sha256 from "crypto-js/sha256";
+import { encode } from "utf8";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Navbar() {
   const auth = useAuth();
@@ -19,6 +22,21 @@ export default function Navbar() {
 
   const handleLogin = () => {
     auth.signinRedirect();
+  };
+
+  const getImageUrl = (
+    email: string | null | undefined
+  ): string | undefined => {
+    if (!email) {
+      return undefined;
+    }
+    return `https://www.gravatar.com/avatar/${computeSha256Hash(
+      email
+    )}?d=retro`;
+  };
+
+  const computeSha256Hash = (rawData: string): string => {
+    return sha256(encode(rawData)).toString();
   };
 
   return (
@@ -41,10 +59,14 @@ export default function Navbar() {
       </div>
       <div className="auth-actions">
         {auth.isAuthenticated ? (
-          <div className="flex items-center space-x-2">
-            <span className="user-info">
-              {auth.user?.profile.name || "User"}
-            </span>
+          <div className="user-info">
+            <Avatar>
+              <AvatarImage src={getImageUrl(auth?.user?.profile.email) || ""} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+
+            {auth.user?.profile.name || "User"}
+
             <Button onClick={handleLogout}>Log out</Button>
           </div>
         ) : (
