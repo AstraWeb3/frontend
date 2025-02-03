@@ -1,6 +1,6 @@
 import { Key } from "react";
-import DirectoryItem from "../DirectoryItem/DirectoryItem";
 import "../Directory/Directory.styles.scss";
+import DirectoryItem from "../DirectoryItem/DirectoryItem";
 
 export type DirectoryCategory = {
   id: Key;

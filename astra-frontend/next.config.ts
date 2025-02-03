@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["cdn.dribbble.com", "images.scalebranding.com"],
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;

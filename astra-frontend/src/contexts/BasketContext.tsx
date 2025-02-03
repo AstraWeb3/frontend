@@ -4,6 +4,8 @@
  * @file This file contains the implementation of the BasketContext and BasketProvider components.
  * The BasketContext provides a context for managing the customer's basket state, including adding,
  * updating, and removing items from the basket.
+ *
+ * @copyright (C) Giovanny Hernandez.  All rights reserved.
  */
 
 import BasketClient from "@/clients/BasketClient";
@@ -57,6 +59,7 @@ export const BasketProvider = ({ children }: BasketProviderProps) => {
   };
 
   const auth = useAuth() || fakeAuth;
+
   console.log(auth.user);
   const userId = auth.user?.profile?.sub || null;
   const accessToken = auth.user?.access_token || null;
@@ -74,6 +77,8 @@ export const BasketProvider = ({ children }: BasketProviderProps) => {
   const [basket, setBasket] = useState<CustomerBasket | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  console.log(basket);
 
   /**
    * Fetches the customer's basket and updates the basket state.
@@ -98,10 +103,12 @@ export const BasketProvider = ({ children }: BasketProviderProps) => {
 
   // Initialize the basket and set up update notifications
   useEffect(() => {
+    if (!userId) return;
+
+    console.log("Fetching basket...");
     fetchBasket();
     basketState.setOnBasketUpdated(fetchBasket);
-  }, [fetchBasket, basketState]);
-
+  }, [fetchBasket, userId]);
   /**
    * Adds a new item to the customer's basket.
    * @param newItem - The new item to be added to the basket.

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "react-oidc-context";
 import "../NavBar/Navbar.styles.scss";
+import { Button } from "../ui/button";
 
 export default function Navbar() {
   const auth = useAuth();
@@ -21,54 +22,33 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="nav flex items-center justify-between px-4 py-2 bg-gray-800 text-white">
-      <h1 className="logo flex items-center">
+    <nav className="nav">
+      <h1 className="logo">
         <Image
           src="https://images.scalebranding.com/circle-a-letter-logo-modern-a-logo-565a8e3b-05a4-4025-b400-ec40a1be79ad.jpg"
           alt="logo"
           width={50}
           height={50}
         />
-        <span className="ml-2 text-lg font-bold">My Marketplace</span>
       </h1>
-      <div className="links flex items-center space-x-4">
-        <Link href="/" className="hover:underline">
-          Home
-        </Link>
-        <Link href="/shop" className="hover:underline">
-          Marketplace
-        </Link>
-        <Link href="/documentation" className="hover:underline">
-          Documentation
-        </Link>
+      <div className="links">
+        <Link href="/">Home</Link>
+        <Link href="/shop">Marketplace</Link>
+        <Link href="/documentation">Documentation</Link>
         {auth.isAuthenticated && isAdmin && (
-          <Link href="/catalog" className="hover:underline">
-            Catalog
-          </Link>
+          <Link href="/catalog">Catalog</Link>
         )}
       </div>
-
-      {/* Authentication Actions */}
-      <div className="auth-actions flex items-center space-x-4">
+      <div className="auth-actions">
         {auth.isAuthenticated ? (
           <div className="flex items-center space-x-2">
-            <span className="font-medium">
+            <span className="user-info">
               {auth.user?.profile.name || "User"}
             </span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
-            >
-              Log out
-            </button>
+            <Button onClick={handleLogout}>Log out</Button>
           </div>
         ) : (
-          <Link
-            href="/login"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded"
-          >
-            Log in
-          </Link>
+          <Button onClick={handleLogin}>Log in</Button>
         )}
       </div>
     </nav>
