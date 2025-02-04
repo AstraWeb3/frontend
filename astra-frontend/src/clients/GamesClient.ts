@@ -8,13 +8,13 @@ import { CommandResult } from "@/models/CommandResult";
 import { GameDetails } from "@/models/GameDetails";
 import { GamesPage } from "@/models/GamesPage";
 import { Result } from "@/uitls/Result";
+import { BaseClient, HttpRequestType, HttpResponseMessage } from "./BaseClient";
 
 /**
  * Represents a client for interacting with the games API.
  */
-class GamesClient {
+class GamesClient extends BaseClient {
   private baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  private accessToken: string | null;
 
   /**
    * Creates a new instance of the GamesClient class.
@@ -22,7 +22,7 @@ class GamesClient {
    * @param accessToken The access token to be used for authentication. Defaults to null.
    */
   constructor(accessToken: string | null = null) {
-    this.accessToken = accessToken;
+    super(accessToken);
   }
 
   /**
@@ -47,10 +47,15 @@ class GamesClient {
       url.searchParams.append("name", nameSearch);
     }
 
-    const response = await this.fetchWithHandling(url.toString());
+    const response =
+      await this.serviceClient.routeRequestWithRetries<HttpResponseMessage>(
+        url.toString()
+      );
 
     if (!response.ok) {
-      const errorMessages = await this.handleFetchError(response);
+      const errorMessages = await this.serviceClient.handleRequestError(
+        response
+      );
       return Result.fail<any>(new Error(errorMessages.join("\n")));
     }
 
@@ -65,16 +70,19 @@ class GamesClient {
    * @returns A Promise that resolves to a CommandResult object.
    */
   async updateGameAsync(updatedGame: GameDetails): Promise<CommandResult> {
-    const response = await this.fetchWithHandling(
-      `${this.baseUrl}/games/${updatedGame.id}`,
-      {
-        method: "PUT",
-        body: this.toMultiPartFormDataContent(updatedGame),
-      }
-    );
+    const response =
+      await this.serviceClient.routeRequestWithRetries<HttpResponseMessage>(
+        `${this.baseUrl}/games/${updatedGame.id}`,
+        {
+          method: HttpRequestType.PUT,
+          body: this.toMultiPartFormDataContent(updatedGame),
+        }
+      );
 
     if (!response.ok) {
-      const errorMessages = await this.handleFetchError(response);
+      const errorMessages = await this.serviceClient.handleRequestError(
+        response
+      );
       return { succeeded: false, errors: errorMessages };
     }
 
@@ -88,15 +96,18 @@ class GamesClient {
    * @returns A Promise that resolves to a CommandResult object.
    */
   async deleteGameAsync(id: string): Promise<CommandResult> {
-    const response = await this.fetchWithHandling(
-      `${this.baseUrl}/games/${id}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response =
+      await this.serviceClient.routeRequestWithRetries<HttpResponseMessage>(
+        `${this.baseUrl}/games/${id}`,
+        {
+          method: HttpRequestType.DELETE,
+        }
+      );
 
     if (!response.ok) {
-      const errorEMessages = await this.handleFetchError(response);
+      const errorEMessages = await this.serviceClient.handleRequestError(
+        response
+      );
       return { succeeded: false, errors: errorEMessages };
     }
     return { succeeded: true, errors: [] };
@@ -121,65 +132,6 @@ class GamesClient {
       formData.append("imageFile", game.imageFile);
     }
     return formData;
-  }
-
-  /**
-   * Performs a fetch request with error handling.
-   *
-   * @param url The URL to fetch.
-   * @param options Optional. The fetch options.
-   * @returns A Promise that resolves to a Response object.
-   */
-  private async fetchWithHandling(
-    url: string,
-    options?: RequestInit
-  ): Promise<Response> {
-    const headers = new Headers(options?.headers);
-
-    if (this.accessToken) {
-      headers.append("Authorization", `Bearer ${this.accessToken}`);
-    }
-
-    const updatedOptions: RequestInit = {
-      ...options,
-      headers,
-    };
-
-    try {
-      const response = await fetch(url, updatedOptions);
-      return response;
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error("Unable to connect to the server.");
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * Handles the error response from a fetch request.
-   *
-   * @param response The response object.
-   * @returns A Promise that resolves to an array of error messages.
-   */
-  private async handleFetchError(response: Response): Promise<string[]> {
-    let errorMessages: string[] = ["Unknown error"];
-    try {
-      const errorData = await response.json();
-      if (errorData.title) {
-        errorMessages = [errorData.title];
-        if (errorData.errors && Array.isArray(errorData.errors)) {
-          errorMessages = errorMessages.concat(errorData.errors);
-        }
-      } else if (errorData.errors && Array.isArray(errorData.errors)) {
-        errorMessages = errorData.errors;
-      } else if (errorData.detail) {
-        errorMessages = [errorData.detail];
-      }
-    } catch (e) {
-      console.error("Error parsing error response:", e);
-    }
-    return errorMessages;
   }
 }
 

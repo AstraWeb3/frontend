@@ -78,7 +78,7 @@ export const BasketProvider = ({ children }: BasketProviderProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(basket);
+  console.log("Fetched Basket: " + basket);
 
   /**
    * Fetches the customer's basket and updates the basket state.

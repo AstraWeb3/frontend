@@ -8,6 +8,12 @@ import { useAuth } from "react-oidc-context";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import "../catalog/Catalog.styles.scss";
+import { GamesPage } from "@/models/GamesPage";
+
+const gamesSpaceDefaultValues = {
+  totalPages: 0,
+  data: [],
+};
 
 /**
  * Renders the CatalogPage component.
@@ -19,8 +25,8 @@ export default function CatalogPage() {
   const auth = useAuth();
 
   const [nameSearch, setNameSearch] = useState(searchParams.get("name") || "");
-  const [gamesPage, setGamesPage] = useState<{ data: GameSummary[] } | null>(
-    null
+  const [gamesPage, setGamesPage] = useState<GamesPage>(
+    gamesSpaceDefaultValues
   );
 
   const [paginationInfo, setPaginationInfo] = useState<{
