@@ -51,6 +51,7 @@ export default function Navbar() {
       </h1>
       <div className="links">
         <Link href="/">Home</Link>
+        <Link href="/social">Social</Link>
         <Link href="/shop">Marketplace</Link>
         <Link href="/documentation">Documentation</Link>
         {auth.isAuthenticated && isAdmin && (

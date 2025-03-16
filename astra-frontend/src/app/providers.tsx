@@ -1,7 +1,10 @@
 "use client";
 
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import { oidcConfig } from "@/config/authConfig";
 import { BasketProvider } from "@/contexts/BasketContext";
+import { UserProvider } from "@/contexts/UserContext";
+import { MultiChainAuthProvider } from "@/providers/MultiChainAuthProvider";
 import { AuthProvider } from "react-oidc-context";
 
 type ChildrenProp = {
@@ -18,8 +21,14 @@ type ChildrenProp = {
  */
 export function Providers({ children }: ChildrenProp) {
   return (
-    <AuthProvider {...oidcConfig}>
-      <BasketProvider>{children}</BasketProvider>
-    </AuthProvider>
+    <ThemeProvider defaultTheme="dark">
+      <UserProvider>
+        <MultiChainAuthProvider>
+          <AuthProvider {...oidcConfig}>
+            <BasketProvider>{children}</BasketProvider>
+          </AuthProvider>
+        </MultiChainAuthProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
