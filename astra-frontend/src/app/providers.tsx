@@ -2,7 +2,6 @@
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { oidcConfig } from "@/config/authConfig";
-import { BasketProvider } from "@/contexts/BasketContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { MultiChainAuthProvider } from "@/providers/MultiChainAuthProvider";
 import { AuthProvider } from "react-oidc-context";
@@ -23,11 +22,7 @@ export function Providers({ children }: ChildrenProp) {
   return (
     <ThemeProvider defaultTheme="dark">
       <UserProvider>
-        <MultiChainAuthProvider>
-          <AuthProvider {...oidcConfig}>
-            <BasketProvider>{children}</BasketProvider>
-          </AuthProvider>
-        </MultiChainAuthProvider>
+        <MultiChainAuthProvider>{children}</MultiChainAuthProvider>
       </UserProvider>
     </ThemeProvider>
   );

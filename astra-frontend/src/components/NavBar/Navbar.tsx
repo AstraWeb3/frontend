@@ -5,16 +5,11 @@ import Image from "next/image";
 import { useAuth } from "react-oidc-context";
 import "../NavBar/Navbar.styles.scss";
 import { Button } from "../ui/button";
-import sha256 from "crypto-js/sha256";
-import { encode } from "utf8";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "../ThemeToggle/theme-toggle";
 
 export default function Navbar() {
   const auth = useAuth();
-
-  const isAdmin =
-    Array.isArray(auth.user?.profile?.role) &&
-    auth.user?.profile?.role.includes("Admin");
 
   const handleLogout = () => {
     auth.signoutRedirect();
@@ -54,26 +49,21 @@ export default function Navbar() {
         <Link href="/social">Social</Link>
         <Link href="/shop">Marketplace</Link>
         <Link href="/documentation">Documentation</Link>
-        {auth.isAuthenticated && isAdmin && (
-          <Link href="/catalog">Catalog</Link>
-        )}
       </div>
       <div className="auth-actions">
-        {auth.isAuthenticated ? (
-          <div className="user-info">
-            <Avatar>
-              <AvatarImage src={getImageUrl(auth?.user?.profile.email) || ""} />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+        <div className="user-info">
+          {/* <Avatar>
+            <AvatarImage src={getImageUrl(auth?.user?.profile.email) || ""} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar> */}
 
-            {auth.user?.profile.name || "User"}
-
-            <Button onClick={handleLogout}>Log out</Button>
-          </div>
-        ) : (
-          <Button onClick={handleLogin}>Log in</Button>
-        )}
+          {/* <Button onClick={handleLogout}>Log out</Button> */}
+        </div>
+        <Button variant="outline" onClick={handleLogin}>
+          Log in
+        </Button>
       </div>
+      <ThemeToggle />
     </nav>
   );
 }
