@@ -32,33 +32,48 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch("http://localhost:5156/api/v1/social/me", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-
-        console.log(userData)
-        setCurrentUser(userData);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user info", error);
-      setIsAuthenticated(false);
-    }
-  }
-
   useEffect(() => {
-    if (!currentUser) fetchUserInfo()
+    const checkAuthStatus = async () => {
+      try {
+        // Make a request only if no valid session is stored
+        const response = await fetch("http://localhost:5156/api/v1/social/me", {
+          method: "GET",
+          credentials: "include",
+        });
 
-    console.log("fetched user info");
-  }, []);
+        console.log("response: " + response)
+
+        if (response.ok) {
+          const userData = await response.json();
+          setCurrentUser(userData);
+          setIsAuthenticated(true);
+          console.log("set ok")
+
+          // Store in localStorage to prevent redundant calls
+          localStorage.setItem("isAuthenticated", "true");
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem("isAuthenticated"); // Clear stored session if unauthorized
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info", error);
+        setIsAuthenticated(false);
+        localStorage.removeItem("isAuthenticated");
+      }
+    };
+
+    // Check localStorage before making an API call
+    const storedSession = localStorage.getItem("isAuthenticated");
+    console.log("storedSession: " + storedSession)
+    console.log("isAuthenticated: " + isAuthenticated)
+    console.log(currentUser);
+
+    if (storedSession && !currentUser) {
+      checkAuthStatus();
+    }
+  }, [isAuthenticated, currentUser]);
+
+
 
   const value = { user: currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }
 

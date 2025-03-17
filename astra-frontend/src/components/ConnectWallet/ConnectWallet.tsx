@@ -123,16 +123,25 @@ export const ConnectWallet = () => {
       if (response.ok) {
         const userData = await response.json();
         setCurrentUser(userData);
-      } else {
-        console.error("Failed to fetch user info");
+
+        // Store in localStorage to prevent redundant calls
+        localStorage.setItem("isAuthenticated", "true");
+
       }
     } catch (error) {
+      localStorage.removeItem("isAuthenticated"); // Clear stored session if unauthorized
+
       console.error("Error fetching user info", error);
     }
   };
 
   const handleLogout = async () => {
     try {
+      await fetch("http://localhost:5156/api/v1/social/logout", {
+        method: "POST",
+        credentials: "include", // Ensure cookies are included
+      });
+
       setIsLoading(true);
       await disconnect();
       setCurrentUser(null);
