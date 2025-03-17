@@ -2,22 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "react-oidc-context";
 import "../NavBar/Navbar.styles.scss";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "../ThemeToggle/theme-toggle";
+import { useUser } from "@/contexts/UserContext";
 
 export default function Navbar() {
-  const auth = useAuth();
-
-  const handleLogout = () => {
-    auth.signoutRedirect();
-  };
-
-  const handleLogin = () => {
-    auth.signinRedirect();
-  };
+  const { user } = useUser();
 
   const getImageUrl = (
     email: string | null | undefined
@@ -52,6 +44,7 @@ export default function Navbar() {
       </div>
       <div className="auth-actions">
         <div className="user-info">
+          {user && <div>{user.defaultPublicKey}</div>}
           {/* <Avatar>
             <AvatarImage src={getImageUrl(auth?.user?.profile.email) || ""} />
             <AvatarFallback>CN</AvatarFallback>
@@ -59,9 +52,15 @@ export default function Navbar() {
 
           {/* <Button onClick={handleLogout}>Log out</Button> */}
         </div>
-        <Button variant="outline" onClick={handleLogin}>
-          Log in
-        </Button>
+        {user ? (
+          <Button variant="outline">
+            <Link href="login">Profile</Link>
+          </Button>
+        ) : (
+          <Button variant="outline">
+            <Link href="/login">Log in </Link>
+          </Button>
+        )}
       </div>
       <ThemeToggle />
     </nav>

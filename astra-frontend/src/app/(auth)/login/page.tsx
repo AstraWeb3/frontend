@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import { useAuth } from "react-oidc-context";
 import sha256 from "crypto-js/sha256";
 import { encode } from "utf8";
+import { useUser } from "@/contexts/UserContext";
+import { ConnectWallet } from "@/components/ConnectWallet/ConnectWallet";
+import "../login/Login.styles.scss";
 
 const LoginPage: React.FC = () => {
-  const auth = useAuth();
+  const { user } = useUser();
 
   const getImageUrl = (
     email: string | null | undefined
@@ -23,52 +25,27 @@ const LoginPage: React.FC = () => {
     return sha256(encode(rawData)).toString();
   };
 
-  const handleLogout = (event: React.FormEvent) => {
-    event.preventDefault();
-    auth.signoutRedirect();
-  };
-
-  if (auth.isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (auth.error) {
-    return <p>Error: {auth.error.message}</p>;
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      {auth.isAuthenticated ? (
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <h2 className="text-xl font-bold mb-4">
-            Welcome, {auth.user?.profile.name || "User"}
-          </h2>
-          <img
-            src={auth.user ? getImageUrl(auth.user.profile.email) : undefined}
-            alt="User"
-            className="w-24 h-24 rounded-full mx-auto mb-4"
-          />
-          <p className="mb-4">You're logged in!</p>
-          <form onSubmit={handleLogout}>
-            <button
-              type="submit"
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-            >
-              Log out
-            </button>
-          </form>
+    <div className="connect-page">
+      <div className="connect-container">
+        <div className="connect-card">
+          <div className="connect-header">
+            <h1>Connect Your Wallet</h1>
+            <p>Sign in with your Solana wallet to continue</p>
+          </div>
+          <div className="connect-divider" />
+          <div className="connect-wallet-wrapper">
+            <ConnectWallet />
+          </div>
+          <div className="connect-footer">
+            <p>
+              By connecting your wallet, you agree to our{" "}
+              <a href="/terms">Terms of Service</a> and{" "}
+              <a href="/privacy">Privacy Policy</a>.
+            </p>
+          </div>
         </div>
-      ) : (
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <h2 className="text-xl font-bold mb-4">Please Sign In</h2>
-          <button
-            onClick={() => auth.signinRedirect()}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Sign In with OIDC
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

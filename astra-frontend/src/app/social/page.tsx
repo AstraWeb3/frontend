@@ -1,5 +1,5 @@
 import { ConnectWallet } from "@/components/ConnectWallet/ConnectWallet";
-import "../social/Social.styles.scss"
+import "../social/Social.styles.scss";
 
 const Social = () => {
   return (
@@ -16,14 +16,15 @@ const Social = () => {
           </div>
           <div className="connect-footer">
             <p>
-              By connecting your wallet, you agree to our <a href="/terms">Terms of Service</a> and{" "}
+              By connecting your wallet, you agree to our{" "}
+              <a href="/terms">Terms of Service</a> and{" "}
               <a href="/privacy">Privacy Policy</a>.
             </p>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Social;

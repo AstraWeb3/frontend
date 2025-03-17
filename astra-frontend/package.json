@@ -19,6 +19,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.98.0",
     "@wagmi/core": "^2.16.5",
+    "axios": "^1.8.3",
     "bs58": "^6.0.0",
     "chalk": "^5.4.1",
     "class-variance-authority": "^0.7.1",
