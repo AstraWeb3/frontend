@@ -20,7 +20,6 @@ import "../ConnectWallet/ConnectWallet.styles.scss";
  * - Display authentication status and allow logout
  *
  */
-
 export const ConnectWallet = () => {
   const { connection } = useConnection();
   const {
@@ -32,7 +31,7 @@ export const ConnectWallet = () => {
     select,
     wallets,
   } = useWallet();
-  const { user, setCurrentUser } = useUser(); // Get user state from context
+  const { user, setCurrentUser, setIsAuthenticated } = useUser(); // Get user state from context
   const [signature, setSignature] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,8 +74,19 @@ export const ConnectWallet = () => {
 
     try {
       setIsLoading(true);
-      const message = `Authenticate at ${Date.now()}`;
-      const encodedMessage = new TextEncoder().encode(message);
+
+      // Fetch nonce from backend
+      const nonceRes = await fetch(
+        `http://localhost:5156/api/v1/social/nonce/${publicKey.toBase58()}`
+      );
+
+      if (!nonceRes.ok) {
+        throw new Error("Failed to fetch nonce");
+      }
+
+      const nonce = await nonceRes.text();
+
+      const encodedMessage = new TextEncoder().encode(nonce);
       const signedMessage = await signMessage(encodedMessage);
       const signatureBase58 = bs58.encode(signedMessage);
 
@@ -90,7 +100,7 @@ export const ConnectWallet = () => {
           credentials: "include", // Ensure cookies are sent
           body: JSON.stringify({
             defaultPublicKey: publicKey.toBase58(),
-            message,
+            message: nonce,
             signature: signatureBase58,
             network: "SOL",
           }),
@@ -123,10 +133,11 @@ export const ConnectWallet = () => {
       if (response.ok) {
         const userData = await response.json();
         setCurrentUser(userData);
+        setIsAuthenticated(true);
 
         // Store in localStorage to prevent redundant calls
+        localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("isAuthenticated", "true");
-
       }
     } catch (error) {
       localStorage.removeItem("isAuthenticated"); // Clear stored session if unauthorized
@@ -145,6 +156,9 @@ export const ConnectWallet = () => {
       setIsLoading(true);
       await disconnect();
       setCurrentUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("user");
+      localStorage.removeItem("isAuthenticated");
       // You might want to call a logout endpoint here if needed
     } catch (error) {
       console.error("Logout failed", error);

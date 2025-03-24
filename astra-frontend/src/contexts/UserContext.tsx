@@ -1,31 +1,34 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
 
 type UserProviderProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 type BlockchainKey = {
-  network: string,
-  publicKey: string
-}
+  network: string;
+  publicKey: string;
+};
 
 type User = {
-  id: string
-  defaultPublicKey: string
-  blockchainPublicKeys: BlockchainKey[]
-}
+  id: string;
+  defaultPublicKey: string;
+  blockchainPublicKeys: BlockchainKey[];
+};
 
 type UserContextType = {
-  user: User | null,
-  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>
-
-}
+  user: User | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 export const UserContext = createContext<UserContextType>({
   user: null,
-  setCurrentUser: () => null
+  setCurrentUser: () => null,
+  isAuthenticated: false,
+  setIsAuthenticated: () => false,
 });
 
 export const UserProvider = ({ children }: UserProviderProps) => {
@@ -41,19 +44,22 @@ export const UserProvider = ({ children }: UserProviderProps) => {
           credentials: "include",
         });
 
-        console.log("response: " + response)
+        console.log("response: " + response);
 
         if (response.ok) {
           const userData = await response.json();
           setCurrentUser(userData);
           setIsAuthenticated(true);
-          console.log("set ok")
+          console.log("set ok");
 
           // Store in localStorage to prevent redundant calls
+          localStorage.setItem("user", JSON.stringify(userData));
           localStorage.setItem("isAuthenticated", "true");
         } else {
           setIsAuthenticated(false);
-          localStorage.removeItem("isAuthenticated"); // Clear stored session if unauthorized
+          // Clear stored session if unauthorized
+          localStorage.removeItem("isAuthenticated");
+          localStorage.removeItem("user");
         }
       } catch (error) {
         console.error("Failed to fetch user info", error);
@@ -64,8 +70,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
     // Check localStorage before making an API call
     const storedSession = localStorage.getItem("isAuthenticated");
-    console.log("storedSession: " + storedSession)
-    console.log("isAuthenticated: " + isAuthenticated)
+    console.log("storedSession: " + storedSession);
+    console.log("isAuthenticated: " + isAuthenticated);
     console.log(currentUser);
 
     if (storedSession && !currentUser) {
@@ -73,11 +79,14 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   }, [isAuthenticated, currentUser]);
 
+  const value = {
+    user: currentUser,
+    setCurrentUser,
+    isAuthenticated,
+    setIsAuthenticated,
+  };
 
-
-  const value = { user: currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }
-
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
-}
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+};
 
 export const useUser = () => useContext(UserContext);
